@@ -9,19 +9,19 @@ Coming soon
 
 ## Running the project
 
-Clone the project. 
+Clone the project: 
 ```bash
 git clone https://github.com/zepez/coin-tracker
 ```
 
 
-Install dependencies. 
+Install dependencies: 
 ```bash
 npm install
 ```
 
 
-Start the development server. 
+Start the development server: 
 ```bash
 npm run dev
 ```
@@ -33,7 +33,7 @@ The CoinMarketCap API key is stored in the "api_key" environment variable.
 
 [Docker repository](https://hub.docker.com/r/zepezauer/coin-tracker)
 
-Sample docker command. 
+Sample docker command:
 ```bash
 docker run -p 3000:3000 -e api_key=YOURKEY zepezauer/coin-tracker
 ```
