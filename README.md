@@ -31,6 +31,13 @@ The CoinMarketCap API key is stored in the "api_key" environment variable.
 
 ## Docker
 
-Coming soon
+[Docker repository](https://hub.docker.com/r/zepezauer/coin-tracker)
+
+Sample docker command. 
+```bash
+docker run -p 3000:3000 -e api_key=YOURKEY zepezauer/coin-tracker
+```
+
+
 
 
