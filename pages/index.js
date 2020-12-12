@@ -1,65 +1,93 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import React, { useState } from 'react';
 
-export default function Home() {
+
+import Head from 'next/head'
+import Layout from '../components/Layout'
+import CoinCard from '../components/CoinCard'
+
+import { Input, Box } from '@chakra-ui/react'
+
+
+
+import api from '../config/axios'
+
+
+
+export default function Home(props) {
+
+  const [search, setSearch] = useState()
+
+  const handleSearch = (query) => {
+
+    // avoid shallow copy of props
+    let searchResults = [...props.rankList]
+
+    // to lowercase to normalize data
+    searchResults = searchResults.filter(x => x.name.toLowerCase().includes(query.toLowerCase()) )
+
+    // use state here to avoid updating props
+    // still want to call the api on the server side
+    setSearch(searchResults)
+  }
+
+
+
   return (
-    <div className={styles.container}>
+    <div>
       <Head>
-        <title>Create Next App</title>
+        <title>Simple coin tracker | Alex Zepezauer</title>
         <link rel="icon" href="/favicon.ico" />
+
+        <meta charset="UTF-8" />
+        <meta name="description" content="Simple coin tracker built off of coinmarketcap.com's API" />
+        <meta name="author" content="Alex Zepezauer" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+      <Layout>
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+        {/* search  */}
+        <Box maxW="600px" m="0 auto" mb="5" px={5}>
+          <Input placeholder="Search currencies" borderColor="blue.800" borderWidth="1px" onChange={(e) => handleSearch(e.target.value)} />
+        </Box>
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+        {/* split display method to avoid updating props  */}
+        {/* still want to call api on server  */}
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+        {/* display only data from api call  */}
+        {!search && (<>
+          {/* coin cards / data display */}
+          {props.rankList.map((coin, coinIndex) => {
+            return (
+              <CoinCard coin={coin} key={coinIndex} />
+            )
+          })}
+        </>)}
 
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+        {/* display search results  */}
+        {search && (<>
+          {/* coin cards / data display */}
+          {search.map((coin, coinIndex) => {
+            return (
+              <CoinCard coin={coin} key={coinIndex} />
+            )
+          })}
+        </>)}
+      </Layout>
     </div>
   )
+}
+
+
+export async function getServerSideProps(ctx) {
+
+  let rankList = api.get()
+    .then((res) => res.data.data) 
+    .catch((e) => console.log(e)) 
+
+  return {
+    props: {
+      rankList: await rankList
+    },
+  };
 }
